@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import '../../../accounts/domain/providers/account_notifier.dart';
 import '../../data/models/transfer_request.dart';
 import '../../domain/providers/transfer_provider.dart';
+import '../../../notifications/presentation/providers/notification_provider.dart';
 
 class TransferScreen extends ConsumerStatefulWidget {
   const TransferScreen({super.key});
@@ -80,6 +81,8 @@ class _TransferScreenState
       await ref
           .read(transferServiceProvider)
           .transfer(request);
+
+          ref.invalidate(unreadNotificationCountProvider);
 
       if (!mounted) return;
 

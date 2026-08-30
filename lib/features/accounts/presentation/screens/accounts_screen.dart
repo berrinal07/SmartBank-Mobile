@@ -7,6 +7,9 @@ import 'account_detail_screen.dart';
 import 'create_account_screen.dart';
 import '../../../transfers/presentation/screens/transfer_screen.dart';
 import '../../../transactions/presentation/screens/transactions_screen.dart';
+import '../../../notifications/presentation/screens/notification_screen.dart';
+import '../../../notifications/presentation/providers/notification_provider.dart';
+
 
 class AccountsScreen extends ConsumerWidget {
   const AccountsScreen({super.key});
@@ -14,6 +17,9 @@ class AccountsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final accountsAsync = ref.watch(accountNotifierProvider);
+
+    final unreadCountAsync =
+    ref.watch(unreadNotificationCountProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -44,6 +50,29 @@ class AccountsScreen extends ConsumerWidget {
               );
             },
           ),
+
+          // Bildirimler
+IconButton(
+  icon: Badge(
+    label: unreadCountAsync.when(
+      data: (count) =>
+          count > 0 ? Text('$count') : null,
+      loading: () => null,
+      error: (_, _) => null,
+    ),
+    child: const Icon(Icons.notifications),
+  ),
+  tooltip: 'Bildirimler',
+  onPressed: () async {
+  await Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (_) => const NotificationScreen(),
+    ),
+  );
+
+  ref.invalidate(unreadNotificationCountProvider);
+},
+),
         ],
       ),
       body: accountsAsync.when(
