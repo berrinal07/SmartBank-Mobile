@@ -51,46 +51,73 @@ class AccountDetailScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(24),
             children: [
               Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Hesap Türü',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        account.accountType.name == 'checking'
-                            ? 'Vadesiz Hesap'
-                            : 'Vadeli Hesap',
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
+  child: Padding(
+    padding: const EdgeInsets.all(24),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              child: Icon(
+                account.accountType.name == 'checking'
+                    ? Icons.account_balance_wallet_outlined
+                    : Icons.lock_clock_outlined,
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  account.accountType.name == 'checking'
+                      ? 'Vadesiz Hesap'
+                      : 'Vadeli Hesap',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
+                const SizedBox(height: 4),
+                Text(
+                  'Hesap No: ${account.accountNumber}',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+
+        const SizedBox(height: 28),
+
+        Text(
+          'Bakiye',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey.shade600,
+          ),
+        ),
+
+        const SizedBox(height: 6),
+
+        Text(
+          '${account.balance.toStringAsFixed(2)} ₺',
+          style: const TextStyle(
+            fontSize: 32,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ),
+  ),
+),
 
               const SizedBox(height: 16),
 
-              _InfoCard(
-                title: 'Hesap Numarası',
-                value: account.accountNumber,
-              ),
-
-              _InfoCard(
-                title: 'Bakiye',
-                value:
-                    '${account.balance.toStringAsFixed(2)} ₺',
-              ),
+              
 
              if (account.accountType.name == 'term') ...[
   _InfoCard(
@@ -137,14 +164,33 @@ class _InfoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(
-          value,
-          style: const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-          ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 18,
+          vertical: 16,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey.shade600,
+              ),
+            ),
+            const SizedBox(width: 16),
+            Flexible(
+              child: Text(
+                value,
+                textAlign: TextAlign.right,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

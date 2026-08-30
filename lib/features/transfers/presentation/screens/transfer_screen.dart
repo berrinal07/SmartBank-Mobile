@@ -82,7 +82,9 @@ class _TransferScreenState
           .read(transferServiceProvider)
           .transfer(request);
 
-          ref.invalidate(unreadNotificationCountProvider);
+      ref.invalidate(
+        unreadNotificationCountProvider,
+      );
 
       if (!mounted) return;
 
@@ -100,33 +102,35 @@ class _TransferScreenState
       _amountController.clear();
       _descriptionController.clear();
     } on DioException catch (e) {
-  if (!mounted) return;
+      if (!mounted) return;
 
-  String message = 'Transfer gerçekleştirilemedi.';
+      String message =
+          'Transfer gerçekleştirilemedi.';
 
-  final responseData = e.response?.data;
+      final responseData = e.response?.data;
 
-  if (responseData is Map<String, dynamic> &&
-      responseData['message'] != null) {
-    message = responseData['message'].toString();
-  }
+      if (responseData is Map<String, dynamic> &&
+          responseData['message'] != null) {
+        message =
+            responseData['message'].toString();
+      }
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-    ),
-  );
-} catch (e) {
-  if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text(
-        'Transfer sırasında beklenmeyen bir hata oluştu.',
-      ),
-    ),
-  );
-}finally {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Transfer sırasında beklenmeyen bir hata oluştu.',
+          ),
+        ),
+      );
+    } finally {
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -140,45 +144,110 @@ class _TransferScreenState
     final accountsAsync =
         ref.watch(accountNotifierProvider);
 
+    final colorScheme =
+        Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Para Transferi'),
+        title: const Text(
+          'Para Transferi',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(20),
         child: Form(
           key: _formKey,
           child: ListView(
             children: [
+              // Başlık
               const Text(
-                'Gönderen Hesap',
+                'Para Gönder',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 26,
                   fontWeight: FontWeight.bold,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
+
+              Text(
+                'Hesaplarınız arasında ve diğer kullanıcı '
+                'hesaplarıyla güvenli bir şekilde para '
+                'transferi yapabilirsiniz.',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
+              ),
+
+              const SizedBox(height: 28),
+
+              // Gönderen hesap
+              const Text(
+                'Gönderen Hesap',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+
+              const SizedBox(height: 10),
 
               accountsAsync.when(
                 loading: () => const Center(
-                  child: CircularProgressIndicator(),
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child:
+                        CircularProgressIndicator(),
+                  ),
                 ),
-                error: (error, stackTrace) => Text(
-                  'Hesaplar yüklenemedi: $error',
+                error: (error, stackTrace) =>
+                    Container(
+                  padding:
+                      const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.error
+                        .withValues(alpha: 0.08),
+                    borderRadius:
+                        BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    'Hesaplar yüklenemedi: $error',
+                  ),
                 ),
                 data: (accounts) {
                   if (accounts.isEmpty) {
-                    return const Text(
-                      'Transfer yapmak için hesabınız bulunmuyor.',
+                    return Container(
+                      padding:
+                          const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius:
+                            BorderRadius.circular(12),
+                      ),
+                      child: const Text(
+                        'Transfer yapmak için hesabınız '
+                        'bulunmuyor.',
+                      ),
                     );
                   }
 
                   return DropdownButtonFormField<String>(
-                   initialValue: _selectedFromAccountNumber,
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Gönderen Hesap',
+                    initialValue:
+                        _selectedFromAccountNumber,
+                    isExpanded: true,
+                    decoration:
+                        const InputDecoration(
+                      labelText: 'Gönderen hesap',
+                      prefixIcon: Icon(
+                        Icons
+                            .account_balance_wallet_outlined,
+                      ),
                     ),
                     items: accounts.map((account) {
                       final accountName =
@@ -187,12 +256,25 @@ class _TransferScreenState
                               ? 'Vadesiz Hesap'
                               : 'Vadeli Hesap';
 
+                      final accountNumber =
+                          account.accountNumber;
+
+                      final lastFour =
+                          accountNumber.length >= 4
+                              ? accountNumber.substring(
+                                  accountNumber.length - 4,
+                                )
+                              : accountNumber;
+
                       return DropdownMenuItem<String>(
-                        value: account.accountNumber,
+                        value:
+                            account.accountNumber,
                         child: Text(
-                          '$accountName - '
-                          '${account.accountNumber} '
-                          '(${account.balance.toStringAsFixed(2)} ₺)',
+                          '$accountName • **** $lastFour • '
+                          '${account.balance.toStringAsFixed(2)} ₺',
+                          overflow:
+                              TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       );
                     }).toList(),
@@ -214,25 +296,31 @@ class _TransferScreenState
                 },
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
 
+              // Alıcı hesap
               const Text(
                 'Alıcı Hesap',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
 
               TextFormField(
                 controller: _toAccountController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                keyboardType:
+                    TextInputType.number,
+                decoration:
+                    const InputDecoration(
+                  labelText: 'Hesap numarası',
                   hintText:
                       'Alıcının hesap numarası',
+                  prefixIcon: Icon(
+                    Icons.person_outline,
+                  ),
                 ),
                 validator: (value) {
                   if (value == null ||
@@ -244,17 +332,18 @@ class _TransferScreenState
                 },
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
 
+              // Tutar
               const Text(
-                'Tutar',
+                'Transfer Tutarı',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
 
               TextFormField(
                 controller: _amountController,
@@ -262,9 +351,13 @@ class _TransferScreenState
                     const TextInputType.numberWithOptions(
                   decimal: true,
                 ),
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration:
+                    const InputDecoration(
+                  labelText: 'Tutar',
                   hintText: 'Örneğin 500',
+                  prefixIcon: Icon(
+                    Icons.payments_outlined,
+                  ),
                   suffixText: '₺',
                 ),
                 validator: (value) {
@@ -288,46 +381,97 @@ class _TransferScreenState
                 },
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 22),
 
+              // Açıklama
               const Text(
                 'Açıklama',
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
 
-              const SizedBox(height: 8),
+              const SizedBox(height: 10),
 
               TextFormField(
                 controller:
                     _descriptionController,
                 maxLines: 3,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
+                decoration:
+                    const InputDecoration(
+                  labelText: 'Açıklama',
                   hintText: 'İsteğe bağlı',
+                  prefixIcon: Padding(
+                    padding: EdgeInsets.only(
+                      bottom: 40,
+                    ),
+                    child: Icon(
+                      Icons.notes_outlined,
+                    ),
+                  ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 30),
 
+              // Transfer butonu
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
+                height: 54,
+                child: ElevatedButton.icon(
                   onPressed:
                       _isLoading ? null : _transfer,
-                  child: _isLoading
+                  icon: _isLoading
                       ? const SizedBox(
-                          height: 20,
                           width: 20,
+                          height: 20,
                           child:
-                              CircularProgressIndicator(),
+                              CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: Colors.white,
+                          ),
                         )
-                      : const Text(
-                          'Transfer Yap',
+                      : const Icon(
+                          Icons.send_outlined,
                         ),
+                  label: Text(
+                    _isLoading
+                        ? 'Transfer gerçekleştiriliyor...'
+                        : 'Transfer Yap',
+                    style:
+                        const TextStyle(
+                      fontSize: 16,
+                      fontWeight:
+                          FontWeight.w600,
+                    ),
+                  ),
                 ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // Güvenlik bilgisi
+              Row(
+                mainAxisAlignment:
+                    MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.lock_outline,
+                    size: 16,
+                    color:
+                        Colors.grey.shade600,
+                  ),
+                  const SizedBox(width: 6),
+                  Text(
+                    'Güvenli transfer',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color:
+                          Colors.grey.shade600,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

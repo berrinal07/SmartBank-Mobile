@@ -51,24 +51,104 @@ class _TransactionsScreenState
     final transactionsAsync =
         ref.watch(transactionNotifierProvider);
 
+    final colorScheme =
+        Theme.of(context).colorScheme;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('İşlem Geçmişi'),
+        title: const Text(
+          'İşlem Geçmişi',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ),
       body: transactionsAsync.when(
         loading: () => const Center(
           child: CircularProgressIndicator(),
         ),
         error: (error, stackTrace) => Center(
-          child: Text(
-            'İşlemler yüklenemedi: $error',
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'İşlemler yüklenemedi.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '$error',
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    ref
+                        .read(
+                          transactionNotifierProvider
+                              .notifier,
+                        )
+                        .refreshTransactions();
+                  },
+                  child: const Text('Tekrar Dene'),
+                ),
+              ],
+            ),
           ),
         ),
         data: (transactions) {
           if (transactions.isEmpty) {
-            return const Center(
-              child: Text(
-                'Henüz işleminiz bulunmuyor.',
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: colorScheme.primary
+                            .withValues(alpha: 0.08),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.receipt_long_outlined,
+                        size: 48,
+                        color: colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Text(
+                      'Henüz işleminiz bulunmuyor.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Yaptığınız para transferleri ve '
+                      'diğer işlemler burada görünecek.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           }
@@ -77,36 +157,128 @@ class _TransactionsScreenState
             onRefresh: () {
               return ref
                   .read(
-                    transactionNotifierProvider.notifier,
+                    transactionNotifierProvider
+                        .notifier,
                   )
                   .refreshTransactions();
             },
             child: ListView.builder(
               controller: _scrollController,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                32,
+              ),
               itemCount: transactions.length,
               itemBuilder: (context, index) {
                 final transaction =
                     transactions[index];
 
+                final isIncoming =
+                    transaction.amount >= 0;
+
+                final amountText =
+                    '${isIncoming ? '+' : ''}'
+                    '${transaction.amount.toStringAsFixed(2)} ₺';
+
+                final description =
+                    transaction.description ??
+                        'Transfer';
+
+                final localDate =
+                    transaction.createdAt.toLocal();
+
+                final dateText =
+                    '${localDate.day.toString().padLeft(2, '0')}.'
+                    '${localDate.month.toString().padLeft(2, '0')}.'
+                    '${localDate.year}';
+
+                final timeText =
+                    '${localDate.hour.toString().padLeft(2, '0')}:'
+                    '${localDate.minute.toString().padLeft(2, '0')}';
+
                 return Card(
-                  margin:
-                      const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    leading: const CircleAvatar(
-                      child: Icon(Icons.swap_horiz),
+                  margin: const EdgeInsets.only(
+                    bottom: 12,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 14,
                     ),
-                    title: Text(
-                      '${transaction.amount.toStringAsFixed(2)} ₺',
-                    ),
-                    subtitle: Text(
-                      transaction.description ??
-                          'Transfer',
-                    ),
-                    trailing: Text(
-                      _formatDate(
-                        transaction.createdAt,
-                      ),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 46,
+                          height: 46,
+                          decoration: BoxDecoration(
+                            color: (isIncoming
+                                    ? Colors.green
+                                    : Colors.red)
+                                .withValues(
+                              alpha: 0.10,
+                            ),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isIncoming
+                                ? Icons
+                                    .arrow_downward_rounded
+                                : Icons
+                                    .arrow_upward_rounded,
+                            color: isIncoming
+                                ? Colors.green
+                                : Colors.red,
+                            size: 22,
+                          ),
+                        ),
+
+                        const SizedBox(width: 14),
+
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                description,
+                                maxLines: 1,
+                                overflow:
+                                    TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight:
+                                      FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              Text(
+                                '$dateText • $timeText',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color:
+                                      Colors.grey.shade600,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        const SizedBox(width: 12),
+
+                        Text(
+                          amountText,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: isIncoming
+                                ? Colors.green
+                                : Colors.red,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 );
@@ -116,14 +288,6 @@ class _TransactionsScreenState
         },
       ),
     );
-  }
-
-  String _formatDate(DateTime date) {
-    final localDate = date.toLocal();
-
-    return '${localDate.day.toString().padLeft(2, '0')}.'
-        '${localDate.month.toString().padLeft(2, '0')}.'
-        '${localDate.year}';
   }
 }
 

@@ -42,4 +42,33 @@ class AuthService {
 
     return RegisterResponse.fromJson(response.data);
   }
+
+
+  
+Future<LoginResponse> refreshToken() async {
+  final refreshToken = await _storage.getRefreshToken();
+
+  if (refreshToken == null || refreshToken.isEmpty) {
+    throw Exception('Refresh token bulunamadı.');
+  }
+
+  final response = await _apiClient.dio.post(
+    '/api/auth/refresh',
+    data: {
+      'refreshToken': refreshToken,
+    },
+  );
+
+  final loginResponse =
+      LoginResponse.fromJson(response.data);
+
+  await _storage.saveTokens(
+    accessToken: loginResponse.accessToken,
+    refreshToken: loginResponse.refreshToken,
+  );
+
+  return loginResponse;
+}
+
+
 }
