@@ -235,7 +235,7 @@ Flutter kurulumunu kontrol etmek için:
 flutter doctor
 ```
 
-## ▶ Projeyi Çalıştırma
+##  Projeyi Çalıştırma
 
 Repository'yi klonladıktan sonra proje klasörüne girin:
 
