@@ -4,23 +4,23 @@ SmartBank, kullanıcıların banka hesaplarını yönetebildiği, para transferi
 
 Bu repository, SmartBank projesinin **Flutter mobil uygulamasını** içerir.
 
-## 🚀 Özellikler
+##  Özellikler
 
-* 🔐 Kullanıcı giriş işlemleri
-* 🔑 JWT tabanlı kimlik doğrulama
-* 🔄 Access token yenileme
-* 💳 Çoklu banka hesabı yönetimi
-* 🏦 Vadesiz ve vadeli hesap desteği
-* 💸 Hesaplar arası ve kullanıcılar arası para transferi
-* 📊 İşlem geçmişi
-* 🔔 Bildirimler ve okunmamış bildirim sayacı
-* 👤 Profil bilgilerini görüntüleme ve güncelleme
-* 🔒 Şifre değiştirme
-* 🚪 Güvenli çıkış
-* 🔄 Pull-to-refresh ve infinite scroll
-* ⚠️ Loading, hata ve boş durum yönetimi
+*  Kullanıcı giriş işlemleri
+*  JWT tabanlı kimlik doğrulama
+*  Access token yenileme
+*  Çoklu banka hesabı yönetimi
+*  Vadesiz ve vadeli hesap desteği
+*  Hesaplar arası ve kullanıcılar arası para transferi
+*  İşlem geçmişi
+*  Bildirimler ve okunmamış bildirim sayacı
+*  Profil bilgilerini görüntüleme ve güncelleme
+*  Şifre değiştirme
+*  Güvenli çıkış
+*  Pull-to-refresh ve infinite scroll
+*  Loading, hata ve boş durum yönetimi
 
-## 🛠️ Teknolojiler
+##  Teknolojiler
 
 * **Flutter**
 * **Dart**
@@ -28,7 +28,7 @@ Bu repository, SmartBank projesinin **Flutter mobil uygulamasını** içerir.
 * **Dio** — HTTP client
 * **flutter_secure_storage** — Güvenli token saklama
 
-## 🏗️ Proje Yapısı
+##  Proje Yapısı
 
 Proje, **feature-based** bir klasör yapısı ve katmanlı bir organizasyon kullanmaktadır.
 
@@ -142,7 +142,7 @@ Feature'lar arasında ortak olarak kullanılabilecek UI bileşenlerini içerir.
 
 * `widgets/` — Tekrar kullanılabilir ortak Flutter widget'ları
 
-## 🔐 Authentication
+##  Authentication
 
 Uygulama JWT tabanlı kimlik doğrulama kullanmaktadır.
 
@@ -170,7 +170,7 @@ Access ve refresh token bilgileri `flutter_secure_storage` kullanılarak cihaz �
 
 API istekleri `Dio` üzerinden gerçekleştirilmektedir.
 
-## 📱 Uygulama Ekranları
+##  Uygulama Ekranları
 
 ### Dashboard
 
@@ -219,7 +219,7 @@ Ayrıca:
 
 işlemleri profil ekranı üzerinden gerçekleştirilebilir.
 
-## ⚙️ Gereksinimler
+##  Gereksinimler
 
 Projeyi çalıştırabilmek için aşağıdakilerin kurulu olması gerekir:
 
@@ -235,7 +235,7 @@ Flutter kurulumunu kontrol etmek için:
 flutter doctor
 ```
 
-## ▶️ Projeyi Çalıştırma
+## ▶ Projeyi Çalıştırma
 
 Repository'yi klonladıktan sonra proje klasörüne girin:
 
@@ -261,7 +261,7 @@ Uygulamayı çalıştırın:
 flutter run
 ```
 
-## 🔗 Backend Bağlantısı
+##  Backend Bağlantısı
 
 SmartBank Mobile, SmartBank Backend API ile haberleşmektedir.
 
@@ -271,7 +271,7 @@ Mobil uygulamanın çalışabilmesi için backend API'nin local olarak çalış�
 
 API bağlantısı, mobil uygulamadaki network yapılandırması üzerinden belirlenmektedir.
 
-## 🧪 Test
+##  Test
 
 Kod kalitesini kontrol etmek için:
 
@@ -294,7 +294,7 @@ Test edilen başlıca akışlar:
 * Şifre değiştirme
 * Çıkış yapma
 
-## 🌿 Git Branch Yapısı
+##  Git Branch Yapısı
 
 Projede temel olarak aşağıdaki branch yapısı kullanılmaktadır:
 
@@ -308,7 +308,7 @@ Geliştirme çalışmaları `develop` branch'i üzerinden yürütülmektedir.
 
 Stabil sürümler `main` branch'ine aktarılır.
 
-## 📌 Proje Durumu
+##  Proje Durumu
 
 SmartBank Mobile uygulamasının temel mobil bankacılık özellikleri tamamlanmıştır.
 
